@@ -1,7 +1,13 @@
+<center><img src="https://github.com/brinterwastaken/material_speedometer/assets/72494265/a8ed72c4-c842-4e94-8431-742b8f0bb420"></center>
+
 # VelocityView
 
 VelocityView, a simple, powerful, Material3 themed speedometer app.
-## Note: 
+
+## Screenshots
+
+
+## Note
 - The application is still in BETA, and bugs can be expected.
 - Speed accuracy depends on multiple factors, and the application is only meant to give an idea of the speed. It is not a scientific measurement application.
 
