@@ -18,14 +18,16 @@ class SettingsModal {
 
     return showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).devicePixelRatio * MediaQuery.of(context).size.width/4,
             child: ListView(
               physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
               children: [
                 Center(
                   child: Padding(
@@ -118,7 +120,6 @@ class SettingsModal {
                 ),
                 ListTile(
                   dense: true,
-                  visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.info_outline_rounded, size: 16, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),),
                   title: Text(
                     "Version $versionText",
