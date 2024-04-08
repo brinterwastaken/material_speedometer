@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:location/location.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:material_speedometer/widgets/speed_dial.dart';
@@ -107,6 +108,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   void _getPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
     int? storedThemeInt = prefs.getInt('themeMode');
     String? storedUnit = prefs.getString('unit');
     int? storedMaxSpeed = prefs.getInt('maxSpeed');
@@ -115,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage>
     setState(() {
       _unit = storedUnit!;
       _maxspeed = storedMaxSpeed!;
+      _appVersion = "${packageInfo.version}+${packageInfo.buildNumber}";
     });
   }
 
@@ -156,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage>
         if (_pollingStarted) {
           _avgcount++;
           _speedsSum += _newspeed;
-          _avgspeed = (_speedsSum/_avgcount).round();
+          _avgspeed = (_speedsSum / _avgcount).round();
         }
       });
     });
@@ -184,6 +188,8 @@ class _MyHomePageState extends State<MyHomePage>
   bool _pollingStarted = false;
   String _unit = "km/h";
   bool _isListening = false;
+
+  String _appVersion = "";
 
   final List<ThemeMode> _themeModes = [
     ThemeMode.light,
@@ -376,8 +382,15 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.settings),
-        onPressed: () => SettingsModal.settingsModal(context, _unit, _setUnit,
-            _maxspeed, _setMaxSpeed, widget.themeMode, _setThemeSave),
+        onPressed: () => SettingsModal.settingsModal(
+            context,
+            _unit,
+            _setUnit,
+            _maxspeed,
+            _setMaxSpeed,
+            widget.themeMode,
+            _setThemeSave,
+            _appVersion),
       ),
     );
   }

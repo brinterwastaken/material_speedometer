@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsModal {
 
@@ -10,15 +9,12 @@ class SettingsModal {
       int maxSpeed,
       Function(int maxSpeed) setMaxSpeed,
       ThemeMode themeMode,
-      Function(ThemeMode themeMode) setThemeMode) {
+      Function(ThemeMode themeMode) setThemeMode,
+      String versionText) {
     List<String> units = ["m/s", "km/h", "mph"];
     List<int> maxSpeeds = [50, 100, 250, 500, 1000, 2000];
     List<String> themes = ["Light", "Dark", "System"];
     List<ThemeMode> themeModes = [ThemeMode.light, ThemeMode.dark, ThemeMode.system];
-
-    String appVersion = "";
-
-    PackageInfo.fromPlatform().then((value) => { appVersion = "${value.version}+${value.buildNumber}" });
 
     return showModalBottomSheet(
       context: context,
@@ -27,7 +23,7 @@ class SettingsModal {
             builder: (BuildContext context, StateSetter setState) {
           return SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 330,
+            height: MediaQuery.of(context).devicePixelRatio * MediaQuery.of(context).size.width/4,
             child: ListView(
               physics: const NeverScrollableScrollPhysics(),
               children: [
@@ -125,7 +121,7 @@ class SettingsModal {
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.info_outline_rounded, size: 16, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),),
                   title: Text(
-                    "Version $appVersion",
+                    "Version $versionText",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                   ),
                 ),
