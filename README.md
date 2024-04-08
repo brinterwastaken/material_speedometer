@@ -9,9 +9,7 @@ VelocityView, a simple, powerful, Material3 themed speedometer app.
 
 ## Screenshots
 
-<img src="https://github.com/brinterwastaken/material_speedometer/assets/72494265/0346acec-a682-4d12-9eb5-7efcd6193e3b" width="280">  <img src="https://github.com/brinterwastaken/material_speedometer/assets/72494265/5975f54b-e987-4416-aa28-a5e02ce47194" width="280">
-
-
+<img src="https://github.com/brinterwastaken/material_speedometer/assets/72494265/27ed08a7-c89e-4f23-b87c-eeab3c118bf7" width="280"> <img src="https://github.com/brinterwastaken/material_speedometer/assets/72494265/73614a62-c1c1-44b8-913a-ccb7a1721d86" width="280">
 
 ## Note
 - The application is still in BETA, so bugs can be expected.
