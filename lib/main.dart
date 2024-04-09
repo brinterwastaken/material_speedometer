@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -146,13 +147,13 @@ class _MyHomePageState extends State<MyHomePage>
     _locationSubscription = location.onLocationChanged.listen(
       (LocationData currentLocation) {
         _pollingStarted = true;
-        double speedmps = currentLocation.speed ?? 0;
+        _speedmps = currentLocation.speed ?? 0;
         if (_unit == "m/s") {
-          _updateSpeed(speedmps.round());
+          _updateSpeed(_speedmps.round());
         } else if (_unit == "km/h") {
-          _updateSpeed((speedmps * 3.6).round());
+          _updateSpeed((_speedmps * 3.6).round());
         } else if (_unit == "mph") {
-          _updateSpeed((speedmps * 2.2369363).round());
+          _updateSpeed((_speedmps * 2.2369363).round());
         }
       },
     );
@@ -160,35 +161,75 @@ class _MyHomePageState extends State<MyHomePage>
       setState(() {
         if (_pollingStarted) {
           _avgcount++;
-          _speedsSum += _newspeed;
-          _avgspeed = (_speedsSum / _avgcount).round();
+          _speedsSum += _speedmps;
+          _avgspeed = (_speedsSum / _avgcount);
         }
       });
     });
   }
 
-  void _stopListening() {
+  void _stopListening() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     _locationSubscription.cancel();
     _avgSpeedTimer.cancel();
     _updateSpeed(0);
+
+    List<String>? oldList = prefs.getStringList('journeys');
+    Map<String, dynamic> newJourney = {"topSpeed" : _topspeed, "avgSpeed" : _avgspeed};
+    String newEntry = jsonEncode(newJourney);
+    if (oldList == null) {
+      oldList = [newEntry];
+    } else {
+      oldList.add(newEntry);
+    }
+    prefs.setStringList('journeys', oldList);
+
+
     setState(() {
       _isListening = false;
       _topspeed = 0;
       _avgspeed = 0;
+      _speedsSum = 0;
+      _avgcount = 0;
       _pollingStarted = false;
     });
   }
 
+  double _speedmps = 0;
   int _maxspeed = 100;
   int _newspeed = 0;
   int _oldspeed = 0;
-  int _topspeed = 0;
-  int _avgspeed = 0;
+  double _topspeed = 0;
+  double _avgspeed = 0;
   int _avgcount = 0;
-  int _speedsSum = 0;
+  double _speedsSum = 0;
   bool _pollingStarted = false;
   String _unit = "km/h";
   bool _isListening = false;
+
+  String _getTopSpeed() {
+    if (_unit == "m/s") {
+      return (_topspeed.round()).toString();
+    } else if (_unit == "km/h") {
+      return ((_topspeed * 3.6).round()).toString();
+    } else if (_unit == "mph") {
+      return ((_topspeed * 2.2369363).round()).toString();
+    } else {
+      return "0";
+    }
+  }
+  String _getAvgSpeed() {
+    if (_unit == "m/s") {
+      return (_avgspeed.round()).toString();
+    } else if (_unit == "km/h") {
+      return ((_avgspeed * 3.6).round()).toString();
+    } else if (_unit == "mph") {
+      return ((_avgspeed * 2.2369363).round()).toString();
+    } else {
+      return "0";
+    }
+  }
 
   String _appVersion = "";
 
@@ -202,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage>
     setState(() {
       _oldspeed = _newspeed;
       _newspeed = speed;
-      _topspeed = _newspeed > _topspeed ? _newspeed : _topspeed;
+      _topspeed = _speedmps > _topspeed ? _speedmps : _topspeed;
     });
     _animationController.animateTo(_newspeed / _maxspeed,
         duration: const Duration(milliseconds: 1000), curve: Curves.ease);
@@ -266,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PastJourneyScreen()),
+                MaterialPageRoute(builder: (context) => PastJourneyScreen(unit: _unit,)),
               );
             },
             icon: const Icon(Icons.route),
@@ -341,14 +382,14 @@ class _MyHomePageState extends State<MyHomePage>
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "$_topspeed ",
+                            "${_getTopSpeed()} $_unit",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -361,7 +402,7 @@ class _MyHomePageState extends State<MyHomePage>
                                             .withOpacity(0.5)),
                           ),
                           Text(
-                            "$_avgspeed ",
+                            "${_getAvgSpeed()} $_unit",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
